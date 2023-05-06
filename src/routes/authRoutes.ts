@@ -1,10 +1,11 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
+import { sendEmailToken } from "../services/emailService";
 
 const EMAIL_EXPIRATION_TIME = 10;
 const AUTHENTICATION_EXPIRATION_TIME_HOURS = 12;
-const JWT_SECRET = "THISISMYJWTSECRET";
+const JWT_SECRET = process.env.JWT_SECRET || "THISISMYJWTSECRET";
 const router = express.Router();
 const prisma = new PrismaClient();
 
@@ -15,7 +16,10 @@ function generateEmailToken(): string {
 function generateAuthToken(tokenId: number): string {
   const jwtPayload = { tokenId };
 
-  return jwt.sign(jwtPayload, JWT_SECRET, { noTimestamp: true });
+  return jwt.sign(jwtPayload, JWT_SECRET, {
+    algorithm: "HS256",
+    noTimestamp: true,
+  });
 }
 
 // Craete a user, if doen't exist,
@@ -47,6 +51,7 @@ router.post("/login", async (req, res) => {
     console.log(createdToken);
 
     //   Send Mail Token to users email
+    sendEmailToken(email, emailToken);
     res.sendStatus(200);
   } catch (error) {
     res.status(400).json({ error: "Something went wrong" });

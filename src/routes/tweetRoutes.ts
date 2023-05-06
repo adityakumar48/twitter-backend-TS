@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 
 const router = express.Router();
 const prisma = new PrismaClient();
-const JWT_SECRET = "THISISMYJWTSECRET";
+const JWT_SECRET = process.env.JWT_SECRET || "THISISMYJWTSECRET";
 // Tweet CRUD
 
 // Create Tweet
@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
       data: {
         content,
         image,
-        userId: user?.id,
+        userId: user.id,
       },
     });
     res.status(201).json({ result });

@@ -1,4 +1,5 @@
 import express from "express";
+require("dotenv").config();
 import userRoutes from "./routes/userRoutes";
 import tweetRoutes from "./routes/tweetRoutes";
 import authRoutes from "./routes/authRoutes";
